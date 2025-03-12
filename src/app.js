@@ -1,19 +1,32 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors"); // Import the cors Middleware
-const personRoutes = require("./routes/person.routes");
+const express = require('express');
+const mongoose = require('mongoose');
+const personRoutes = require('./routes/person.routes');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
+const port = process.env.PORT || 3000;
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/person-api-db'; //Change for your connection string
 
 // Middleware to parse JSON request bodies
-app.use(cors()); // Add the cors middleware
 app.use(express.json());
-// Mount the person routes
-app.use("/people", personRoutes);
+app.use(cors());
 
-// Define a simple route (for testing)
-app.get("/", (req, res) => {
-  res.send("API Running");
+// Connect to MongoDB
+mongoose.connect(mongoURI)
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => {
+     console.error('Could not connect to MongoDB', err);
+     process.exit(1); // Exit the process if we can't connect to the DB
 });
 
+// Mount the person routes
+app.use('/people', personRoutes);
+
+// Start the server (only if this file is run directly)
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
 module.exports = app; // Export for testing
