@@ -3,9 +3,16 @@ const app = require("../app"); // Import your Express app
 const mongoose = require("mongoose");
 const Person = require("../models/person.model");
 
+// This code allows me to load the normal database.
+// In the future I need to create a database only for testing.
+// TODO: Create a database for testing only.
+
+require("dotenv").config();
+const MONGODB_URI = process.env.MONGODB_URI;
+
 // Before each test, connect to a test database and clear it.
 beforeEach(async () => {
-  const mongoURITest = "mongodb://localhost:27017/person-api-test-db"; // Use different db for test.
+  const mongoURITest = MONGODB_URI; // TODO: Add here the uri for the testing database.
   await mongoose.connect(mongoURITest);
   await Person.deleteMany({}); // Clear the Person collection
 });
